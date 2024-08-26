@@ -1,0 +1,144 @@
+Initially the slider was what I chose to represent the bars, but it turned out
+to be a bit complex to tweak with it while the solution I implemented was
+easier, yet I'm leaving the code here for future reference. You can check how it
+worked with Repl.it or w3schools.
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      .slidecontainer {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+      }
+
+      .slider {
+        -webkit-appearance: none;
+        width: 80%;
+        height: 50px;
+        border-radius: 30px;
+        background: linear-gradient(
+          to right,
+          #eeddbd 0%,
+          #d88c00 100%,
+          white 0%,
+          white 100%
+        );
+        outline: none;
+        opacity: 0.7;
+        position: relative;
+        cursor: not-allowed;
+        transition: background 1s ease;
+      }
+
+      .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 60px;
+        height: 60px;
+        border: 0;
+        background-color: transparent;
+        cursor: pointer;
+        position: relative;
+        transition: left 1s ease;
+      }
+
+      .slider-thumb-emoji {
+        position: absolute;
+        width: 60px;
+        height: 60px;
+        top: 50%;
+        transform: translateY(-50%);
+        left: 0;
+        pointer-events: none;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><text y="50%" x="50%" dominant-baseline="middle" text-anchor="middle" font-size="24">🐶</text></svg>');
+        background-size: cover;
+        animation: rotate 1s infinite alternate;
+      }
+
+      @keyframes rotate {
+        0% {
+          transform: translateY(-50%) rotate(-10deg);
+        }
+
+        100% {
+          transform: translateY(-50%) rotate(10deg);
+        }
+      }
+
+      #demo {
+        margin-left: 20px;
+        font-weight: bold;
+        min-width: 50px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="slidecontainer">
+      <input
+        type="range"
+        min="1"
+        max="100"
+        value="0"
+        class="slider"
+        id="myRange"
+        disabled
+      />
+      <span class="slider-thumb-emoji"></span>
+      <span id="demo"></span>
+    </div>
+
+    <script>
+      var slider = document.getElementById("myRange");
+      var output = document.getElementById("demo");
+      var thumbEmoji = document.querySelector(".slider-thumb-emoji");
+
+      function updateSlider() {
+        var randomValue =
+          Math.floor(Math.random() * (slider.max - slider.min + 1)) +
+          parseInt(slider.min);
+        var startValue = parseInt(slider.value);
+        var duration = 1000;
+        var startTime = performance.now();
+
+        function animate(time) {
+          var elapsed = time - startTime;
+          var progress = Math.min(elapsed / duration, 1);
+          var currentValue = Math.round(
+            startValue + (randomValue - startValue) * progress
+          );
+
+          slider.value = currentValue;
+          output.innerHTML = currentValue;
+
+          // Update emoji position
+          var percentage =
+            (currentValue - slider.min) / (slider.max - slider.min);
+          var thumbPosition =
+            percentage * (slider.offsetWidth - thumbEmoji.offsetWidth);
+          thumbEmoji.style.left = thumbPosition + "px";
+
+          // Update slider background
+          slider.style.background = `linear-gradient(to right, #FFA500 ${
+            percentage * 100
+          }%, white ${percentage * 100}%)`;
+
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+          }
+        }
+
+        requestAnimationFrame(animate);
+      }
+
+      setInterval(updateSlider, 2000);
+
+      updateSlider();
+    </script>
+  </body>
+</html>
